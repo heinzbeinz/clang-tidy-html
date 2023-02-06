@@ -88,13 +88,18 @@ def main():
     output_path: Path = Path(args.out)
     clang_tidy_visualizer(tidy_log_lines, output_path, args.checks_dict_url)
 
-
 def clang_tidy_visualizer(tidy_log_file: Path,
                           output_html_file: Path = Path("clang.html"),
                           checks_dict_url = None):
     tidy_log_lines = tidy_log_file.read_text().splitlines()
     clang_base_url = "https://clang.llvm.org/extra/clang-tidy/checks/"
     global checks_dict
+
+    if tidy_log_lines[0] == "Enabled checks:":
+        i = 1
+        while (tidy_log_lines[i].startswith('    ')):
+            i = i + 1
+        tidy_log_lines = tidy_log_lines[i:]
 
     if checks_dict_url is None:
         checks_dict_url = clang_base_url + 'list.html'
